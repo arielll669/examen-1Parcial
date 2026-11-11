@@ -54,11 +54,11 @@ Se usan **3 terminales** en VS Code (`Terminal → Nueva terminal`, o el botón 
 ### 0. Obtener el código
 
 ```bash
-git clone https://github.com/arielll669/-EXAMEN-PR-CTICO---Distribuidas.git
-cd ./-EXAMEN-PR-CTICO---Distribuidas
+git clone https://github.com/arielll669/examen-1Parcial.git
+cd examen-1Parcial
 ```
 
-> El `./` es necesario porque el nombre de la carpeta empieza con `-`. Luego abre esa carpeta en VS Code (`code .`).
+> Luego abre esa carpeta en VS Code (`code .`).
 
 ### 1. Terminal 1: SERVIDOR (Docker)
 
