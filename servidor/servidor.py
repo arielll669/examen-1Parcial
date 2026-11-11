@@ -33,6 +33,7 @@ mensajes de esa conexion con [CLIENTE 1] o [CLIENTE 2].
 
 import os
 import re
+import signal
 import socket
 import threading
 from datetime import datetime
@@ -197,9 +198,39 @@ def consola_servidor() -> None:
         texto = texto.strip()
         if texto:
             difundir(f"[SERVIDOR]: {texto[:MAX_LARGO_MENSAJE]}")
+        else:
+            # Enter en blanco: no se envia nada al chat, solo confirma que la
+            # consola esta conectada y muestra quien esta en linea. (`docker attach`
+            # no repite lo que se imprimio antes, asi que sin esto la pantalla
+            # parece vacia.)
+            with candado:
+                en_linea = ", ".join(f"CLIENTE {n}" for n in sorted(clientes)) or "ninguno"
+            mostrar(f"[SERVIDOR]: Consola conectada. En linea: {en_linea}")
+
+
+def ignorar_ctrl_c(numero_senal, marco) -> None:
+    """
+    Con `docker attach`, Ctrl+C llegaria al servidor y lo apagaria sin querer.
+    Lo ignoramos y avisamos como salir de forma segura. Para apagar el servidor
+    se usa `docker compose down` (eso envia SIGTERM, que SI se respeta).
+    """
+    mostrar("[SERVIDOR]: Ctrl+C ignorado. Para salir de la consola sin apagar el servidor "
+            "pulsa Ctrl+P y luego Ctrl+Q. Para apagarlo: docker compose down")
+
+
+def apagar(numero_senal, marco) -> None:
+    """
+    Reacciona a SIGTERM (lo que envia `docker compose down` / `docker stop`).
+    Dentro de un contenedor este programa es el proceso 1, y Linux ignora SIGTERM
+    para el proceso 1 si no tiene un manejador propio: sin esto el apagado tardaria
+    10 segundos. Lanzamos KeyboardInterrupt para salir por el cierre limpio de main().
+    """
+    raise KeyboardInterrupt
 
 
 def main() -> None:
+    signal.signal(signal.SIGINT, ignorar_ctrl_c)
+    signal.signal(signal.SIGTERM, apagar)
     # Socket TCP (SOCK_STREAM) sobre IPv4 (AF_INET).
     servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # Permite reiniciar el servidor enseguida sin esperar a que el SO libere el puerto.

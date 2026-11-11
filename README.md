@@ -74,18 +74,18 @@ Luego conecta esta terminal a la consola del servidor:
 docker attach chat-servidor
 ```
 
-Verás algo como:
+**La pantalla aparece en blanco: es normal.** `docker attach` no repite lo que el servidor imprimió antes de conectarte, solo muestra lo nuevo. Pulsa **Enter** y verás:
 
 ```
-12:00:00 [SERVIDOR]: Chat TCP iniciado en el puerto 5000
-12:00:00 [SERVIDOR]: Esperando al CLIENTE 1 y al CLIENTE 2...
-12:00:00 [SERVIDOR]: Escribe aqui para hablar como SERVIDOR.
+12:00:00 [SERVIDOR]: Consola conectada. En linea: ninguno
 ```
 
-Esta terminal es la **consola del servidor**: ahí se ve todo lo que circula en el chat y lo que escribas sale con la etiqueta `[SERVIDOR]`.
+(El mensaje de arranque "Chat TCP iniciado en el puerto 5000" se consulta con `docker logs chat-servidor`.)
+
+Esta terminal es la **consola del servidor**: a partir de ahora ahí se ve todo lo que circula en el chat, y lo que escribas sale con la etiqueta `[SERVIDOR]`. Un Enter en blanco no envía nada al chat; solo muestra quién está en línea.
 
 > **Para salir de la consola sin apagar el servidor:** pulsa `Ctrl+P` y después `Ctrl+Q`.
-> Si pulsas `Ctrl+C` dentro de `docker attach`, se detiene el servidor.
+> `Ctrl+C` no apaga el servidor (se ignora y se muestra un aviso). Para apagarlo usa `docker compose down`.
 
 ### 2. Terminal 2: CLIENTE 1
 
@@ -117,7 +117,7 @@ docker compose down
 
 | # | Prueba | Qué hacer | Qué se debe ver |
 |---|---|---|---|
-| 1 | Iniciar el servidor en Docker | Terminal 1: `docker compose up -d --build` y `docker attach chat-servidor` | El servidor indica que escucha en el puerto 5000 |
+| 1 | Iniciar el servidor en Docker | Terminal 1: `docker compose up -d --build`, `docker attach chat-servidor` y pulsar Enter | "Consola conectada. En linea: ninguno" (y `docker logs chat-servidor` muestra que escucha en el puerto 5000) |
 | 2 | Conectar el Cliente 1 | Terminal 2: `python cliente/cliente1.py` | "Bienvenido, tu eres el CLIENTE 1". El servidor registra la conexión |
 | 3 | Conectar el Cliente 2 | Terminal 3: `python cliente/cliente2.py` | "Bienvenido, tu eres el CLIENTE 2". Ambos clientes ven que el Cliente 2 se unió |
 | 4 | Enviar mensajes y verificar que ambos lo reciben | Escribe en el Cliente 1, en el Cliente 2 y en la consola del servidor | Cada mensaje aparece en las **tres** terminales con su etiqueta correcta |
@@ -159,6 +159,7 @@ En las tres terminales se ve la misma conversación:
 | `No se pudo conectar a 127.0.0.1:5000` | El servidor no está en marcha. Ejecuta `docker compose up -d --build` y comprueba con `docker ps` |
 | `El CLIENTE 1 ya esta conectado` | Ya hay otra terminal ejecutando `cliente1.py`. Ciérrala con `/salir` o usa `cliente2.py` |
 | `port is already allocated` / puerto 5000 ocupado | Cierra lo que use el 5000, o cambia en `docker-compose.yml` `"5000:5000"` por `"5001:5000"` y ejecuta los clientes con `CHAT_PORT=5001` (PowerShell: `$env:CHAT_PORT=5001; python cliente/cliente1.py`) |
-| `docker attach` no muestra nada | Pulsa Enter, o revisa el historial con `docker logs chat-servidor` |
+| `docker attach` se ve en blanco | Es normal: solo muestra lo nuevo. Pulsa Enter para ver quién está en línea, o revisa lo anterior con `docker logs chat-servidor` |
+| `cannot attach to a stopped container` | El servidor está apagado. Ejecuta `docker compose up -d --build` y vuelve a hacer `docker attach chat-servidor` |
 | Aparecen caracteres raros al escribir en el cliente | Ejecuta el cliente con `CHAT_SIN_ANSI=1` (PowerShell: `$env:CHAT_SIN_ANSI=1`) |
 | Quiero ver los registros del servidor sin `attach` | `docker logs -f chat-servidor` |
