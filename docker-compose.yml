@@ -10,3 +10,7 @@ services:
     # para poder escribir como [SERVIDOR] con `docker attach chat-servidor`.
     stdin_open: true
     tty: true
+    # Zona horaria: por defecto un contenedor usa UTC (5 horas adelantado).
+    # Cámbiala si no estás en Ecuador, Colombia o Perú (UTC-5).
+    environment:
+      TZ: America/Guayaquil
