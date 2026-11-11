@@ -1,24 +1,13 @@
 """
-CLIENTE 2 DEL CHAT EN TIEMPO REAL (TCP + hilos)
 
 Este programa ES el CLIENTE 2. Se ejecuta en una terminal de Visual Studio Code:
 
     python cliente/cliente2.py
 
-(El CLIENTE 1 es otro programa distinto: cliente/cliente1.py, en otra terminal.)
-
 Para escribir y recibir SIN TURNOS usa dos hilos:
 
   * Hilo principal  -> espera lo que escribes con input() y lo envia al servidor.
   * Hilo receptor   -> escucha al servidor y muestra los mensajes en cuanto llegan.
-
-Si ambas tareas estuvieran en un solo hilo, mientras input() espera tu teclado no
-podrias ver los mensajes de los demas (tendrias que esperar tu turno). Con dos
-hilos cada tarea avanza por su cuenta.
-
-Protocolo: cada mensaje es una linea UTF-8 terminada en "\n". Lo primero que
-envia este cliente es "IDENTIDAD 2", para que el servidor sepa quien es y etiquete
-sus mensajes como [CLIENTE 2].
 """
 
 import os

@@ -1,34 +1,13 @@
 """
-SERVIDOR DE CHAT EN TIEMPO REAL (TCP + hilos)
-
 Este programa corre dentro de un contenedor Docker. Hace tres cosas a la vez,
 cada una en su propio hilo (threading.Thread):
 
-  1. Hilo principal  -> acepta conexiones nuevas de clientes (bucle accept).
-  2. Un hilo POR CLIENTE -> lee los mensajes de ese cliente y los distribuye
+  1. Hilo principal  - acepta conexiones nuevas de clientes (bucle accept).
+  2. Un hilo POR CLIENTE - lee los mensajes de ese cliente y los distribuye
                             a todos los participantes.
-  3. Hilo de consola -> lee lo que escribe el SERVIDOR por teclado
+  3. Hilo de consola - lee lo que escribe el SERVIDOR por teclado
                         (docker attach) y lo envia a todos los clientes.
 
-Gracias a los hilos nadie espera su turno: cualquiera puede escribir en
-cualquier momento y el mensaje llega a los demas al instante.
-
-Participantes y etiquetas:
-  [CLIENTE 1]  programa cliente/cliente1.py
-  [CLIENTE 2]  programa cliente/cliente2.py
-  [SERVIDOR]   este programa
-
-Protocolo (muy simple): cada mensaje es una linea de texto UTF-8 terminada en
-salto de linea ("\n"). TCP es un flujo continuo de bytes y no marca donde
-termina un mensaje, por eso usamos "\n" como separador.
-
-Al conectarse, cada cliente envia PRIMERO una linea de identificacion:
-
-    IDENTIDAD 1      (lo envia cliente1.py)
-    IDENTIDAD 2      (lo envia cliente2.py)
-
-El servidor valida esa identidad y, a partir de ahi, etiqueta todos los
-mensajes de esa conexion con [CLIENTE 1] o [CLIENTE 2].
 """
 
 import os
