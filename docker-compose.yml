@@ -1,0 +1,12 @@
+services:
+  servidor:
+    build: ./servidor
+    container_name: chat-servidor
+    # Publica el puerto 5000 del contenedor en el 5000 de tu computadora
+    # (asi los clientes de VS Code se conectan a localhost:5000).
+    ports:
+      - "5000:5000"
+    # Estas dos opciones dejan abierta la entrada de teclado del contenedor
+    # para poder escribir como [SERVIDOR] con `docker attach chat-servidor`.
+    stdin_open: true
+    tty: true
