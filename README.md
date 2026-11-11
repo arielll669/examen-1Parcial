@@ -1,20 +1,7 @@
 # Chat en tiempo real con Python, Hilos, Sockets TCP y Docker
 
-Aplicación de chat en tiempo real formada por **un servidor** (en un contenedor Docker) y **dos clientes** (cada uno es un programa distinto, ejecutado en su propia terminal de Visual Studio Code). Usa **sockets TCP** y **hilos** (`threading`) de Python, de modo que todos los participantes pueden escribir **al mismo tiempo, sin esperar turnos**.
+Aplicación de chat en tiempo real formada por un servidor (en un contenedor Docker) y dos clientes (cada uno es un programa distinto, ejecutado en su propia terminal de Visual Studio Code). Usa sockets TCP y hilos (`threading`) de Python, de modo que todos los participantes pueden escribir al mismo tiempo, sin esperar turnos.
 
-```
-              ┌──────────────────────────────┐
-              │          SERVIDOR            │
-              │   Python + TCP (puerto 5000) │
-              │     Contenedor Docker        │
-              └───────▲──────────────▲───────┘
-                      │              │
-        ┌─────────────┴───┐      ┌───┴─────────────┐
-        │    CLIENTE 1    │      │    CLIENTE 2    │
-        │ Terminal VS Code│      │ Terminal VS Code│
-        │   cliente1.py   │      │   cliente2.py   │
-        └─────────────────┘      └─────────────────┘
-```
 
 ## Participantes
 
@@ -24,11 +11,11 @@ Aplicación de chat en tiempo real formada por **un servidor** (en un contenedor
 | Cliente 1 | `[CLIENTE 1]` | `cliente/cliente1.py` | Terminal 2 de VS Code |
 | Cliente 2 | `[CLIENTE 2]` | `cliente/cliente2.py` | Terminal 3 de VS Code |
 
-Cada cliente es **su propio programa** y se identifica ante el servidor nada más conectarse (`IDENTIDAD 1` o `IDENTIDAD 2`). El servidor etiqueta cada mensaje con el autor correcto y no permite dos clientes con la misma identidad.
+Cada cliente es su propio programa y se identifica ante el servidor nada más conectarse. El servidor etiqueta cada mensaje con el autor correcto y no permite dos clientes con la misma identidad.
 
 ## Requisitos
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y **abierto** (incluye Docker Compose).
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y abierto (incluye Docker Compose).
 - [Python 3.10 o superior](https://www.python.org/downloads/) (se probó con 3.12). Los clientes no necesitan instalar ninguna librería.
 - Visual Studio Code.
 - El puerto **5000** libre en tu computadora.
@@ -54,11 +41,9 @@ Se usan **3 terminales** en VS Code (`Terminal → Nueva terminal`, o el botón 
 ### 0. Obtener el código
 
 ```bash
-git clone https://github.com/arielll669/examen-1Parcial.git
-cd examen-1Parcial
+git clone https://github.com/arielll669/-EXAMEN-PR-CTICO---Distribuidas.git
+cd ./-EXAMEN-PR-CTICO---Distribuidas
 ```
-
-> Luego abre esa carpeta en VS Code (`code .`).
 
 ### 1. Terminal 1: SERVIDOR (Docker)
 
@@ -151,15 +136,3 @@ En las tres terminales se ve la misma conversación:
 - **Protocolo:** cada mensaje es una línea de texto UTF-8 terminada en `\n` (soporta tildes y signos como `¿`).
 - **Identificación:** lo primero que envía cada cliente es `IDENTIDAD 1` o `IDENTIDAD 2`. El servidor etiqueta todos los mensajes de esa conexión con `[CLIENTE 1]` o `[CLIENTE 2]`, y rechaza identidades inválidas o repetidas.
 - **Desconexiones:** si un cliente se va, el servidor avisa a los demás y libera su identidad para que pueda volver a conectarse.
-
-## Solución de problemas
-
-| Problema | Solución |
-|---|---|
-| `No se pudo conectar a 127.0.0.1:5000` | El servidor no está en marcha. Ejecuta `docker compose up -d --build` y comprueba con `docker ps` |
-| `El CLIENTE 1 ya esta conectado` | Ya hay otra terminal ejecutando `cliente1.py`. Ciérrala con `/salir` o usa `cliente2.py` |
-| `port is already allocated` / puerto 5000 ocupado | Cierra lo que use el 5000, o cambia en `docker-compose.yml` `"5000:5000"` por `"5001:5000"` y ejecuta los clientes con `CHAT_PORT=5001` (PowerShell: `$env:CHAT_PORT=5001; python cliente/cliente1.py`) |
-| `docker attach` se ve en blanco | Es normal: solo muestra lo nuevo. Pulsa Enter para ver quién está en línea, o revisa lo anterior con `docker logs chat-servidor` |
-| `cannot attach to a stopped container` | El servidor está apagado. Ejecuta `docker compose up -d --build` y vuelve a hacer `docker attach chat-servidor` |
-| Aparecen caracteres raros al escribir en el cliente | Ejecuta el cliente con `CHAT_SIN_ANSI=1` (PowerShell: `$env:CHAT_SIN_ANSI=1`) |
-| Quiero ver los registros del servidor sin `attach` | `docker logs -f chat-servidor` |
